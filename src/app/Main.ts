@@ -10,7 +10,8 @@ export class Main {
 
     public async run() {
         vscode.window.showInformationMessage("[SpireQuestAPI] Loading extension!");
-        await SpireCompletions.download(this.c);
+        const completions = new SpireCompletions(this.c);
+        await completions.download();
         vscode.window.showInformationMessage("[SpireQuestAPI] Extension loaded!");
     }
 
