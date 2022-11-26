@@ -33,12 +33,33 @@ export async function activate(c: vscode.ExtensionContext) {
                         const currentLine = activeEditor.selection.active.line;
                         // @ts-ignore
                         const {text}      = activeEditor.document.lineAt(activeEditor.selection.active.line);
-                        
+
                         console.log("current line is", currentLine);
                         console.log("current line text is", text);
                     }
 
-                    return [];
+
+                    let snippet = new vscode.CompletionItem(
+                        "eq.worldwideupdateactivity(uint32 task_id, int activity_id, int update_count, uint8 min_status, uint8 max_status)",
+                        vscode.CompletionItemKind.Snippet,
+                    );
+                    snippet.insertText = new vscode.SnippetString("eq.worldwideupdateactivity(${1:uint32 task_id}, ${2:int activity_id}, ${3:int update_count}, ${4:uint8 min_status}, ${5:uint8 max_status})");
+
+                    let snippet2 = new vscode.CompletionItem(
+                        "Hail - NPC Dialogue Block (text, hail)",
+                        vscode.CompletionItemKind.Snippet,
+                    );
+                    snippet2.insertText = new vscode.SnippetString(`if(e.message:findi("hail")) then\n\te.self:Say("Hello.");$0\nend`);
+
+
+                    let snippet3 = new vscode.CompletionItem(
+                        "event_say (snippet)",
+                        vscode.CompletionItemKind.Snippet,
+                    );
+                    snippet3.insertText = new vscode.SnippetString(`function event_say(e)\n\t$0\nend`);
+
+
+                    return [snippet, snippet2, snippet3];
                 }
             },
         )
