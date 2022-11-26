@@ -21,7 +21,6 @@ export class SpireCompletions {
         const axios = require('axios');
         const r     = await axios.get("http://spire.akkadius.com/api/v1/quest-api/definitions");
         if (r.status === 200) {
-            console.log(r);
             this.processDefinitions(r.data.data);
         }
         console.timeEnd("completions process");
