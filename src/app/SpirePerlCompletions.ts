@@ -46,7 +46,6 @@ export class SpirePerlCompletions {
      * @param api
      */
     loadMethods(api: Object) {
-        // constants
         this.methods = [];
         // @ts-ignore
         for (const methodClass in api['perl'].methods) {
@@ -104,7 +103,7 @@ export class SpirePerlCompletions {
             ),
         );
 
-        // test
+        // object methods and quest::
         this.c.subscriptions.push(
             vscode.languages.registerCompletionItemProvider(
                 'perl',
