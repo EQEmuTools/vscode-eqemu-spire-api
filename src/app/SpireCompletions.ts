@@ -27,6 +27,11 @@ export class SpireCompletions {
     }
 
     private processDefinitions(api: Object) {
-        this.lua.processConstants(api);
+        this.lua.loadConstants(api);
+        this.perl.loadConstants(api);
+        this.perl.loadMethods(api);
+
+        this.lua.registerCompletionProvider();
+        this.perl.registerCompletionProvider();
     }
 }

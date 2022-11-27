@@ -3,18 +3,18 @@ import * as util from "util";
 
 export class SpireLuaCompletions {
     private c: vscode.ExtensionContext;
+    private constants: Array<any> = [];
 
     constructor(c: vscode.ExtensionContext) {
         this.c = c;
     }
 
     // @ts-ignore
-    processConstants(api: Object) {
+    loadConstants(api: Object) {
+        this.constants = [];
+
         // @ts-ignore
         const apiConstants = api['lua'].constants;
-
-        // constants
-        let constants: any[] = [];
         // @ts-ignore
         for (const key in apiConstants) {
             // @ts-ignore
@@ -28,16 +28,18 @@ export class SpireLuaCompletions {
                 const item      = new vscode.CompletionItem(constant);
                 item.insertText = new vscode.SnippetString(constant);
 
-                constants.push(item);
+                this.constants.push(item);
             }
         }
+    }
 
+    registerCompletionProvider() {
         this.c.subscriptions.push(
             vscode.languages.registerCompletionItemProvider(
                 'lua',
                 {
-                    provideCompletionItems() {
-                        return constants;
+                    provideCompletionItems: () => {
+                        return this.constants;
                     }
                 },
             )

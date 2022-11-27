@@ -12,7 +12,7 @@
   ],
   "activationEvents": [
     "onLanguage:lua",
-    "onLanguage:pl"
+    "onLanguage:perl"
   ],
   "contributes": {
     "languages": [
