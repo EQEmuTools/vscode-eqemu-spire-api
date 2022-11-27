@@ -29,6 +29,7 @@ export class SpireCompletions {
     private processDefinitions(api: Object) {
         this.lua.loadConstants(api);
         this.lua.loadMethods(api);
+        this.lua.loadEvents(api);
         this.perl.loadConstants(api);
         this.perl.loadMethods(api);
         this.perl.loadEvents(api);

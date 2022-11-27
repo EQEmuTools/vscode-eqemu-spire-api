@@ -7,6 +7,7 @@ export class SpireLuaCompletions {
     private c: vscode.ExtensionContext;
     private constants: Array<any> = [];
     private methods: Array<any>   = [];
+    private events: Array<any>   = [];
 
     constructor(c: vscode.ExtensionContext) {
         this.c = c;
@@ -84,6 +85,56 @@ export class SpireLuaCompletions {
         console.log(this.methods);
     }
 
+    /**
+     * Loads events auto completions into memory via API definitions
+     *
+     * @param api
+     */
+    loadEvents(api: Object) {
+        this.events = [];
+        // @ts-ignore
+        for (const e of api['lua'].events) {
+            // console.log(e);
+
+            // discard invalid event prefix
+            if (e.event_identifier === "event_") {
+                continue;
+            }
+
+            // @ts-ignore
+            let classPrefix = "";
+            // @ts-ignore
+            if (e.entity_type) {
+                // @ts-ignore
+                classPrefix = Strings.snakeCase(e.entity_type.replace("NPC", "Npc"));
+            }
+            let i = new vscode.CompletionItem(
+                // @ts-ignore
+                "function " + e.event_identifier + "(e)",
+                vscode.CompletionItemKind.Snippet,
+            );
+
+            let vars = [];
+            // @ts-ignore
+            for (let v of e.event_vars) {
+                vars.push(`\teq.debug("${v} " .. e.${v});`);
+            }
+
+            let varsStr = vars.length > 0 ? `\t-- Exported event variables\n` : "";
+            varsStr     = vars.join("\n");
+
+            // @ts-ignore
+            i.insertText = new vscode.SnippetString(`function ${e.event_identifier}(e)\n\${1:${varsStr}}\nend`);
+
+            i.kind   = vscode.CompletionItemKind.Snippet;
+            // @ts-ignore
+            i.detail = e.entity_type;
+            // @ts-ignore
+            i.class  = classPrefix;
+            this.events.push(i);
+        }
+    }
+
     registerCompletionProvider() {
 
         // constants
@@ -92,6 +143,11 @@ export class SpireLuaCompletions {
                 'lua',
                 {
                     provideCompletionItems: (doc: vscode.TextDocument, position: vscode.Position) => {
+                        // if we're at or close to position zero, we're not interested in constants
+                        if (position.character < 2) {
+                            return [];
+                        }
+
                         const word = doc.getWordRangeAtPosition(position);
                         if (!word) {
                             return [];
@@ -199,6 +255,54 @@ export class SpireLuaCompletions {
                     },
                 },
                 ":", "."
+            ),
+        );
+
+        // events
+        this.c.subscriptions.push(
+            vscode.languages.registerCompletionItemProvider(
+                'lua',
+                {
+                    provideCompletionItems: (doc: vscode.TextDocument, position: vscode.Position) => {
+
+                        console.log("[Lua] event completion", position.character);
+
+                        // if we're not at position zero, it's unlikely we're looking to make a sub event
+                        if (position.character > 2) {
+                            return [];
+                        }
+
+                        let completionItems: Array<any> = [];
+                        const isPlayerScript            = path.parse(doc.fileName).name.includes("player");
+                        const isBotScript               = path.parse(doc.fileName).name.includes("bot");
+                        const isItemScript              = doc.fileName.includes("/items/");
+                        const isSpellScript             = doc.fileName.includes("/spells/");
+                        if (isPlayerScript) {
+                            completionItems = this.events.filter((f) => {
+                                console.log(f);
+                                return f.class === "player";
+                            });
+                        } else if (isBotScript) {
+                            completionItems = this.events.filter((f) => {
+                                return f.class === "bot";
+                            });
+                        } else if (isItemScript) {
+                            completionItems = this.events.filter((f) => {
+                                return f.class === "item";
+                            });
+                        } else if (isSpellScript) {
+                            completionItems = this.events.filter((f) => {
+                                return f.class === "spell";
+                            });
+                        } else if (!isPlayerScript) {
+                            completionItems = this.events.filter((f) => {
+                                return f.class === "npc";
+                            });
+                        }
+
+                        return completionItems;
+                    }
+                },
             ),
         );
     }

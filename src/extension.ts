@@ -39,22 +39,13 @@ export async function activate(c: vscode.ExtensionContext) {
                         console.log("current line text is", text);
                     }
 
-
                     let snippet2 = new vscode.CompletionItem(
                         "Hail - NPC Dialogue Block (text, hail)",
                         vscode.CompletionItemKind.Snippet,
                     );
                     snippet2.insertText = new vscode.SnippetString(`if (e.message:findi("hail")) then\n\te.self:Say("Hello.");$0\nend`);
 
-
-                    let snippet3 = new vscode.CompletionItem(
-                        "event_say (snippet)",
-                        vscode.CompletionItemKind.Snippet,
-                    );
-                    snippet3.insertText = new vscode.SnippetString(`function event_say(e)\n\t$0\nend`);
-
-
-                    return [snippet2, snippet3];
+                    return [snippet2];
                 }
             },
         )

@@ -142,7 +142,12 @@ export class SpirePerlCompletions {
             vscode.languages.registerCompletionItemProvider(
                 'perl',
                 {
-                    provideCompletionItems: () => {
+                    provideCompletionItems: (doc: vscode.TextDocument, position: vscode.Position) => {
+                        // if we're at or close to position zero, we're not interested in constants
+                        if (position.character <= 3) {
+                            return [];
+                        }
+
                         return this.constants;
                     }
                 },
