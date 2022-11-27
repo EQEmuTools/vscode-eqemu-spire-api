@@ -93,9 +93,9 @@ export class SpireLuaCompletions {
                         if (!word) {
                             return [];
                         }
-    
+
                         // console.log("We have a range");
-    
+
                         const range = new vscode.Range(
                             position.line,
                             word.start.character,
@@ -108,16 +108,16 @@ export class SpireLuaCompletions {
                         if (doc.getText(range) === "t") {
                             return [];
                         }
-    
+
                         // console.log("Text at range is [%s]", doc.getText(range));
-    
+
                         const activeEditor = vscode.window.activeTextEditor;
                         if (activeEditor !== null) {
                             // @ts-ignore
                             const currentLine = activeEditor.selection.active.line;
                             // @ts-ignore
                             const {text}      = activeEditor.document.lineAt(activeEditor.selection.active.line);
-    
+
                             // console.log("current line is", currentLine);
                             // console.log("current line text is", text);
                         }
@@ -147,7 +147,7 @@ export class SpireLuaCompletions {
                             if (lineTextToCursor && lineTextToCursor.length > 0) {
                                 console.log("[Lua] line text up to cursor is [%s]", lineTextToCursor);
 
-                                // quest::
+                                // eq.
                                 if (lineTextToCursor.slice(-3) === "eq.") {
                                     for (let m of this.methods) {
                                         if (m.class === "eq") {
