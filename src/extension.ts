@@ -45,7 +45,13 @@ export async function activate(c: vscode.ExtensionContext) {
                     );
                     snippet2.insertText = new vscode.SnippetString(`if (e.message:findi("hail")) then\n\te.self:Say("Hello.");$0\nend`);
 
-                    return [snippet2];
+                    let snippet4 = new vscode.CompletionItem(
+                        "if (condition)",
+                        vscode.CompletionItemKind.Snippet,
+                    );
+                    snippet4.insertText = new vscode.SnippetString(`if (\${1:condition}) then\n\t\${2:logic}\nend`);
+
+                    return [snippet2, snippet4];
                 }
             },
         )
