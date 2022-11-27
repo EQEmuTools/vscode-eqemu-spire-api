@@ -1,9 +1,11 @@
 import * as vscode from "vscode";
 import * as util from "util";
 import {Strings} from "./Strings";
+import * as path from "path";
 
 export class SpirePerlCompletions {
     private c: vscode.ExtensionContext;
+    private events: Array<any>    = [];
     private constants: Array<any> = [];
     private methods: Array<any>   = [];
 
@@ -50,7 +52,9 @@ export class SpirePerlCompletions {
         // @ts-ignore
         for (const methodClass in api['perl'].methods) {
             // console.log("e", methodClass);
-            const classPrefix = Strings.snakeCase(methodClass.replace("NPC", "Npc"));
+            let classPrefix = Strings.snakeCase(methodClass.replace("NPC", "Npc"));
+            // manual fixes
+            classPrefix = classPrefix.replace(/quest_item/, "questitem");
             // console.log("classPrefix", classPrefix);
 
             // @ts-ignore
@@ -84,8 +88,51 @@ export class SpirePerlCompletions {
 
             }
         }
+    }
 
-        console.log(this.methods);
+    /**
+     * Loads events auto completions into memory via API definitions
+     *
+     * @param api
+     */
+    loadEvents(api: Object) {
+        this.events = [];
+        // @ts-ignore
+        for (const e of api['perl'].events) {
+            // console.log(e);
+
+            // @ts-ignore
+            let classPrefix = "";
+            // @ts-ignore
+            if (e.entity_type) {
+                // @ts-ignore
+                classPrefix = Strings.snakeCase(e.entity_type.replace("NPC", "Npc"));
+            }
+            let i = new vscode.CompletionItem(
+                // @ts-ignore
+                "sub " + e.event_name,
+                vscode.CompletionItemKind.Snippet,
+            );
+
+            let vars = [];
+            // @ts-ignore
+            for (let v of e.event_vars) {
+                vars.push(`\tquest::debug(\"${v} \" . \\$${v});`);
+            }
+
+            let varsStr = vars.length > 0 ? `\t# Exported event variables\n` : "";
+            varsStr     = vars.join("\n");
+
+            // @ts-ignore
+            i.insertText = new vscode.SnippetString(`sub ${e.event_name} {\n\${1:${varsStr}}\n}`);
+
+            i.kind   = vscode.CompletionItemKind.Snippet;
+            // @ts-ignore
+            i.detail = e.entity_type;
+            // @ts-ignore
+            i.class  = classPrefix;
+            this.events.push(i);
+        }
     }
 
     registerCompletionProvider() {
@@ -156,6 +203,45 @@ export class SpirePerlCompletions {
                     },
                 },
                 ">", ":"
+            ),
+        );
+
+        // events
+        this.c.subscriptions.push(
+            vscode.languages.registerCompletionItemProvider(
+                'perl',
+                {
+                    provideCompletionItems: (doc: vscode.TextDocument, position: vscode.Position) => {
+                        let completionItems: Array<any> = [];
+                        const isPlayerScript            = path.parse(doc.fileName).name.includes("player");
+                        const isBotScript               = path.parse(doc.fileName).name.includes("bot");
+                        const isItemScript              = doc.fileName.includes("/items/");
+                        const isSpellScript             = doc.fileName.includes("/spells/");
+                        if (isPlayerScript) {
+                            completionItems = this.events.filter((f) => {
+                                return f.class === "player";
+                            });
+                        } else if (isBotScript) {
+                            completionItems = this.events.filter((f) => {
+                                return f.class === "bot";
+                            });
+                        } else if (isItemScript) {
+                            completionItems = this.events.filter((f) => {
+                                return f.class === "item";
+                            });
+                        } else if (isSpellScript) {
+                            completionItems = this.events.filter((f) => {
+                                return f.class === "spell";
+                            });
+                        } else if (!isPlayerScript) {
+                            completionItems = this.events.filter((f) => {
+                                return f.class === "npc";
+                            });
+                        }
+
+                        return completionItems;
+                    }
+                },
             ),
         );
     }

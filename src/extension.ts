@@ -91,19 +91,13 @@ export async function activate(c: vscode.ExtensionContext) {
                         console.log("current line text is", text);
                     }
 
-
-                    let snippet2 = new vscode.CompletionItem(
-                        "EVENT_SAY",
+                    let snippet3 = new vscode.CompletionItem(
+                        "Hail - NPC Dialogue Block (text, hail)",
                         vscode.CompletionItemKind.Snippet,
                     );
-                    snippet2.insertText = new vscode.SnippetString(`sub EVENT_SAY {
-\${1:\t# Exported event variables
-\tquest::debug("data " . \\$data);
-\tquest::debug("text " . \\$text);
-\tquest::debug("langid " . \\$langid);}
-}`);
+                    snippet3.insertText = new vscode.SnippetString(`if (\\$text=~/hail/i) {\n\tquest::say("Hail!");$0\n}`);
 
-                    return [snippet2];
+                    return [snippet3];
                 }
             },
         )

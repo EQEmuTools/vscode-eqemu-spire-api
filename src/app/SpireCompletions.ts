@@ -31,6 +31,7 @@ export class SpireCompletions {
         this.lua.loadMethods(api);
         this.perl.loadConstants(api);
         this.perl.loadMethods(api);
+        this.perl.loadEvents(api);
 
         this.lua.registerCompletionProvider();
         this.perl.registerCompletionProvider();
