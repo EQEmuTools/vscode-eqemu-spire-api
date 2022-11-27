@@ -6,6 +6,7 @@ import {Main} from './app/Main';
 export async function activate(c: vscode.ExtensionContext) {
     await (new Main(c)).run();
 
+    // testing
     c.subscriptions.push(
         vscode.languages.registerCompletionItemProvider(
             'lua',
@@ -59,6 +60,7 @@ export async function activate(c: vscode.ExtensionContext) {
         )
     );
 
+    // test
     c.subscriptions.push(
         vscode.languages.registerCompletionItemProvider(
             'perl',
@@ -97,7 +99,13 @@ export async function activate(c: vscode.ExtensionContext) {
                     );
                     snippet3.insertText = new vscode.SnippetString(`if (\\$text=~/hail/i) {\n\tquest::say("Hail!");$0\n}`);
 
-                    return [snippet3];
+                    let snippet4 = new vscode.CompletionItem(
+                        "if (condition)",
+                        vscode.CompletionItemKind.Snippet,
+                    );
+                    snippet4.insertText = new vscode.SnippetString(`if (\${1:condition}) {\n\t\${2:logic}\n}`);
+
+                    return [snippet4, snippet3];
                 }
             },
         )

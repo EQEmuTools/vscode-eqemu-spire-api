@@ -212,6 +212,14 @@ export class SpirePerlCompletions {
                 'perl',
                 {
                     provideCompletionItems: (doc: vscode.TextDocument, position: vscode.Position) => {
+
+                        console.log("[Perl] event completion", position.character);
+
+                        // if we're not at position zero, it's unlikely we're looking to make a sub event
+                        if (position.character >= 3) {
+                            return [];
+                        }
+
                         let completionItems: Array<any> = [];
                         const isPlayerScript            = path.parse(doc.fileName).name.includes("player");
                         const isBotScript               = path.parse(doc.fileName).name.includes("bot");
