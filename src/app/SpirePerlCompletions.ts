@@ -194,7 +194,7 @@ export class SpirePerlCompletions {
             prefixes = ["expedition"];
         }
 
-        console.log("Completion prefixes are", prefixes);
+        // console.log("Completion prefixes are", prefixes);
 
         return prefixes;
     }

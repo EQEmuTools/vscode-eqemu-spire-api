@@ -58,6 +58,56 @@ export async function activate(c: vscode.ExtensionContext) {
             },
         )
     );
+
+    c.subscriptions.push(
+        vscode.languages.registerCompletionItemProvider(
+            'perl',
+            {
+                provideCompletionItems(doc: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken) {
+                    const word = doc.getWordRangeAtPosition(position);
+                    if (!word) {
+                        return [];
+                    }
+
+                    console.log("We have a range");
+
+                    const range = new vscode.Range(
+                        position.line,
+                        word.start.character,
+                        position.line,
+                        word.end.character
+                    );
+
+                    console.log("Text at range is [%s]", doc.getText(range));
+
+                    const activeEditor = vscode.window.activeTextEditor;
+                    if (activeEditor !== null) {
+                        // @ts-ignore
+                        const currentLine = activeEditor.selection.active.line;
+                        // @ts-ignore
+                        const {text}      = activeEditor.document.lineAt(activeEditor.selection.active.line);
+
+                        console.log("current line is", currentLine);
+                        console.log("current line text is", text);
+                    }
+
+
+                    let snippet2 = new vscode.CompletionItem(
+                        "EVENT_SAY",
+                        vscode.CompletionItemKind.Snippet,
+                    );
+                    snippet2.insertText = new vscode.SnippetString(`sub EVENT_SAY {
+\${1:\t# Exported event variables
+\tquest::debug("data " . \\$data);
+\tquest::debug("text " . \\$text);
+\tquest::debug("langid " . \\$langid);}
+}`);
+
+                    return [snippet2];
+                }
+            },
+        )
+    );
 }
 
 // This method is called when your extension is deactivated

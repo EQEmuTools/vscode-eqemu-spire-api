@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import * as util from "util";
+import * as path from "path";
 import {Strings} from "./Strings";
 
 export class SpireLuaCompletions {
@@ -84,6 +85,8 @@ export class SpireLuaCompletions {
     }
 
     registerCompletionProvider() {
+
+        // constants
         this.c.subscriptions.push(
             vscode.languages.registerCompletionItemProvider(
                 'lua',
@@ -146,6 +149,40 @@ export class SpireLuaCompletions {
                             const lineTextToCursor = activeEditor.document.getText(new vscode.Range(position.line, 0, position.line, position.character));
                             if (lineTextToCursor && lineTextToCursor.length > 0) {
                                 console.log("[Lua] line text up to cursor is [%s]", lineTextToCursor);
+                                console.log("[Lua] slice 6 [%s]", lineTextToCursor.slice(-6));
+                                console.log("[Lua] filename [%s]", path.parse(doc.fileName).name);
+
+                                const isPlayerScript = path.parse(doc.fileName).name.includes("player");
+
+                                // [object] e.other: and not player script
+                                if (lineTextToCursor.slice(-6) === "other:" && !isPlayerScript) {
+                                    const classesToLoad = this.getCompletionPrefixesByPrefix("client");
+                                    for (let m of this.methods) {
+                                        if (classesToLoad.includes(m.class)) {
+                                            completionItems.push(m);
+                                        }
+                                    }
+                                }
+
+                                // [object] e.self: and not player script
+                                if (lineTextToCursor.slice(-5) === "self:" && !isPlayerScript) {
+                                    const classesToLoad = this.getCompletionPrefixesByPrefix("npc");
+                                    for (let m of this.methods) {
+                                        if (classesToLoad.includes(m.class)) {
+                                            completionItems.push(m);
+                                        }
+                                    }
+                                }
+
+                                // [object] e.self: and player script
+                                if (lineTextToCursor.slice(-5) === "self:" && isPlayerScript) {
+                                    const classesToLoad = this.getCompletionPrefixesByPrefix("client");
+                                    for (let m of this.methods) {
+                                        if (classesToLoad.includes(m.class)) {
+                                            completionItems.push(m);
+                                        }
+                                    }
+                                }
 
                                 // eq.
                                 if (lineTextToCursor.slice(-3) === "eq.") {
@@ -164,5 +201,44 @@ export class SpireLuaCompletions {
                 ":", "."
             ),
         );
+    }
+
+    /**
+     * Loads class prefixes by a given prefix
+     * For example if given "client" it will return [ "client", "mob" ] because client is an instance of mob
+     * Another example is if given GetGroup it will return [ "group" ] to chain methods
+     * @param classPrefix
+     * @private
+     */
+    private getCompletionPrefixesByPrefix(classPrefix: string): Array<string> {
+        let prefixes: Array<any> = [];
+        let prefixMappings       = {
+            "client": ["client", "mob", "entity"],
+            "npc": ["npc", "mob", "entity"],
+            "object": ["object", "entity"],
+            "corpse": ["corpse", "mob", "entity"],
+        };
+
+        // @ts-ignore
+        if (prefixMappings[classPrefix]) {
+            // @ts-ignore
+            prefixes = prefixes.concat(prefixMappings[classPrefix]);
+        } else {
+            prefixes = [classPrefix];
+        }
+
+        if (classPrefix.includes("GetGroup")) {
+            prefixes = ["group"];
+        }
+        if (classPrefix.includes("GetRaid")) {
+            prefixes = ["raid"];
+        }
+        if (classPrefix.includes("GetExpedition")) {
+            prefixes = ["expedition"];
+        }
+
+        // console.log("Completion prefixes are", prefixes);
+
+        return prefixes;
     }
 }
