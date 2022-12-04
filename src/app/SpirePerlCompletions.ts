@@ -6,6 +6,7 @@ import * as path from "path";
 export class SpirePerlCompletions {
     private c: vscode.ExtensionContext;
     private events: Array<any>    = [];
+    private snippets: Array<any>  = [];
     private constants: Array<any> = [];
     private methods: Array<any>   = [];
 
@@ -55,7 +56,7 @@ export class SpirePerlCompletions {
             // console.log("e", methodClass);
             let classPrefix = Strings.snakeCase(methodClass.replace("NPC", "Npc"));
             // manual fixes
-            classPrefix = classPrefix.replace(/quest_item/, "questitem");
+            classPrefix     = classPrefix.replace(/quest_item/, "questitem");
             // console.log("classPrefix", classPrefix);
 
             // @ts-ignore
@@ -86,7 +87,6 @@ export class SpirePerlCompletions {
                 // @ts-ignore
                 i.class      = classPrefix;
                 this.methods.push(i);
-
             }
         }
     }
@@ -126,16 +126,64 @@ export class SpirePerlCompletions {
 
             // @ts-ignore
             i.insertText = new vscode.SnippetString(`sub ${e.event_name} {\n\${1:${varsStr}}\n}`);
-            i.kind   = vscode.CompletionItemKind.Text;
+            i.kind       = vscode.CompletionItemKind.Text;
             // @ts-ignore
-            i.detail = e.entity_type;
+            i.detail     = e.entity_type;
             // @ts-ignore
-            i.class  = classPrefix;
+            i.class      = classPrefix;
             this.events.push(i);
         }
     }
 
+    /**
+     * Loads snippet auto completions into memory via API definitions
+     *
+     * @param fileData
+     * @param files
+     */
+    loadSnippets(fileData: {}, files: Array<any>) {
+        for (let file of files) {
+            if (file.language === 'perl') {
+                // @ts-ignore
+                let contents = fileData[file.file];
+                contents     = contents.replaceAll("\\$", "\\\$");
+                contents     = contents.replaceAll("    ", "\t");
+                const i      = new vscode.CompletionItem(file.text + " (Snippet)");
+                i.insertText = new vscode.SnippetString(contents);
+                i.kind       = vscode.CompletionItemKind.Text;
+                this.snippets.push(i);
+            }
+            if (file.language === 'all') {
+                if (file.file.includes(".csv")) {
+                    // @ts-ignore
+                    let contents = fileData[file.file];
+                    for (let line of contents.split("\n")) {
+                        let split    = line.split(",");
+                        let text     = split[0].trim();
+                        let value    = split[1].trim();
+                        const i      = new vscode.CompletionItem(text + " (Value: " + value + ")");
+                        i.insertText = value;
+                        i.kind       = vscode.CompletionItemKind.Constant;
+                        this.constants.push(i);
+                    }
+                }
+            }
+        }
+    }
+
     registerCompletionProvider() {
+
+        // snippets
+        this.c.subscriptions.push(
+            vscode.languages.registerCompletionItemProvider(
+                'perl',
+                {
+                    provideCompletionItems: (doc: vscode.TextDocument, position: vscode.Position) => {
+                        return this.snippets;
+                    },
+                },
+            ),
+        );
 
         // constants
         this.c.subscriptions.push(

@@ -7,7 +7,8 @@ export class SpireLuaCompletions {
     private c: vscode.ExtensionContext;
     private constants: Array<any> = [];
     private methods: Array<any>   = [];
-    private events: Array<any>   = [];
+    private snippets: Array<any>  = [];
+    private events: Array<any>    = [];
 
     constructor(c: vscode.ExtensionContext) {
         this.c = c;
@@ -82,8 +83,6 @@ export class SpireLuaCompletions {
 
             }
         }
-
-        console.log(this.methods);
     }
 
     /**
@@ -136,7 +135,54 @@ export class SpireLuaCompletions {
         }
     }
 
+    /**
+     * Loads snippet auto completions into memory via API definitions
+     *
+     * @param fileData
+     * @param files
+     */
+    loadSnippets(fileData: {}, files: Array<any>) {
+        for (let file of files) {
+            if (file.language === 'lua') {
+                // @ts-ignore
+                let contents = fileData[file.file];
+                contents     = contents.replaceAll("    ", "\t");
+                const i      = new vscode.CompletionItem(file.text + " (Snippet)");
+                i.insertText = new vscode.SnippetString(contents);
+                i.kind       = vscode.CompletionItemKind.Text;
+                this.snippets.push(i);
+            }
+            if (file.language === 'all') {
+                if (file.file.includes(".csv")) {
+                    // @ts-ignore
+                    let contents = fileData[file.file];
+                    for (let line of contents.split("\n")) {
+                        let split    = line.split(",");
+                        let text     = split[0].trim();
+                        let value    = split[1].trim();
+                        const i      = new vscode.CompletionItem(text + " (Value: " + value + ")");
+                        i.insertText = value;
+                        i.kind       = vscode.CompletionItemKind.Text;
+                        this.snippets.push(i);
+                    }
+                }
+            }
+        }
+    }
+
     registerCompletionProvider() {
+
+        // snippets
+        this.c.subscriptions.push(
+            vscode.languages.registerCompletionItemProvider(
+                'lua',
+                {
+                    provideCompletionItems: (doc: vscode.TextDocument, position: vscode.Position) => {
+                        return this.snippets;
+                    }
+                },
+            ),
+        );
 
         // constants
         this.c.subscriptions.push(
@@ -167,19 +213,6 @@ export class SpireLuaCompletions {
                         // revisit this later
                         if (doc.getText(range) === "t") {
                             return [];
-                        }
-
-                        // console.log("Text at range is [%s]", doc.getText(range));
-
-                        const activeEditor = vscode.window.activeTextEditor;
-                        if (activeEditor !== null) {
-                            // @ts-ignore
-                            const currentLine = activeEditor.selection.active.line;
-                            // @ts-ignore
-                            const {text}      = activeEditor.document.lineAt(activeEditor.selection.active.line);
-
-                            // console.log("current line is", currentLine);
-                            // console.log("current line text is", text);
                         }
 
                         return this.constants;
@@ -280,7 +313,6 @@ export class SpireLuaCompletions {
                         const isSpellScript             = doc.fileName.includes("/spells/");
                         if (isPlayerScript) {
                             completionItems = this.events.filter((f) => {
-                                console.log(f);
                                 return f.class === "player";
                             });
                         } else if (isBotScript) {

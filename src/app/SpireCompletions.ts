@@ -19,9 +19,13 @@ export class SpireCompletions {
     async download() {
         console.time("completions process");
         const axios = require('axios');
-        const r     = await axios.get("http://spire.akkadius.com/api/v1/quest-api/definitions");
+        let r       = await axios.get("http://spire.akkadius.com/api/v1/quest-api/definitions");
         if (r.status === 200) {
             this.processDefinitions(r.data.data);
+        }
+        r = await axios.get("http://spire.akkadius.com/api/v1/quest-api/vscode-snippets");
+        if (r.status === 200) {
+            this.processSnippets(r.data.data);
         }
         console.timeEnd("completions process");
     }
@@ -36,5 +40,18 @@ export class SpireCompletions {
 
         this.lua.registerCompletionProvider();
         this.perl.registerCompletionProvider();
+    }
+
+    private processSnippets(data: Object) {
+        let files = {};
+        for (let file in data) {
+            // @ts-ignore
+            files[file] = data[file];
+        }
+
+        // @ts-ignore
+        const manifest = JSON.parse(files["manifest.json"]);
+        this.lua.loadSnippets(files, manifest.files);
+        this.perl.loadSnippets(files, manifest.files);
     }
 }
