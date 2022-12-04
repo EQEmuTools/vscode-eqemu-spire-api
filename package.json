@@ -2,7 +2,7 @@
   "name": "eqemu-spire-quest-api",
   "displayName": "[EQEmu] Spire Quest API Completions",
   "description": "",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "icon": "img/spire.png",
   "engines": {
     "vscode": "^1.73.0"
@@ -11,7 +11,7 @@
   "publisher": "Akkadius",
   "categories": [
     "Other",
-    "Language Packs"
+    "Snippets"
   ],
   "activationEvents": [
     "onLanguage:lua",

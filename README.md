@@ -24,3 +24,9 @@ Definitions are provided by Spire's API and updated when Spire is updated.
 * **Quest API Explorer** http://spire.akkadius.com/quest-api-explorer
 * **Spire Definitions API** http://spire.akkadius.com/api/v1/quest-api/definitions
 
+### Accompanied Plugins
+
+This plugin works best with the following Lua plugins (Tested)
+
+* **Lua** by **keyring**
+* **Perl** by **Gerald Richter**
