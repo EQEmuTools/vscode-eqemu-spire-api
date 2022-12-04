@@ -15,7 +15,13 @@ EverQuest Emulator Server contains
 * **Automatic Updates** When EQEmulator Server source updates, Spire updates, which means this extension automatically updates the next time you start vscode.
 * **Contextual Awareness** The plugin is aware of the difference of what kind of script it is running in order to give the proper event and method exports. For example in a `player` script, `e.other` and `e.self` are different from a `npc` script in `event_say(e)`. Similarly, the completions provider knows what events are available depending on the type of script you are in `player`, `npc`, `bot`, `item`, `spell` etc.
 
-![image](https://user-images.githubusercontent.com/3319450/205477365-e2e4690e-a4f0-4270-a9b8-c9be2d63cf9a.png)
+![image](https://user-images.githubusercontent.com/3319450/205479553-7b8382e4-0bfc-43c0-bc38-2fba27096602.png)
+
+![image](https://user-images.githubusercontent.com/3319450/205479541-fc1f0cc5-c832-4b3c-866e-929a5908ca95.png)
+
+![image](https://user-images.githubusercontent.com/3319450/205479564-04533228-c937-4c94-a723-e33e6c921ffb.png)
+
+![image](https://user-images.githubusercontent.com/3319450/205479580-7d0c04fd-e81a-4ca0-88c8-9012c7eb092a.png)
 
 ### Definitions
 
