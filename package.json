@@ -2,7 +2,8 @@
   "name": "eqemu-spire-quest-api",
   "displayName": "[EQEmu] Spire Quest API Completions",
   "description": "",
-  "version": "1.0.0",
+  "version": "1.0.1",
+  "icon": "img/spire.png",
   "engines": {
     "vscode": "^1.73.0"
   },
