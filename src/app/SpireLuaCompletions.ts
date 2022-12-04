@@ -31,6 +31,7 @@ export class SpireLuaCompletions {
                 );
                 const item      = new vscode.CompletionItem(constant);
                 item.insertText = new vscode.SnippetString(constant);
+                item.kind       = vscode.CompletionItemKind.Constant;
 
                 this.constants.push(item);
             }
@@ -73,7 +74,7 @@ export class SpireLuaCompletions {
 
                 const i      = new vscode.CompletionItem(label);
                 i.insertText = new vscode.SnippetString(snippet);
-                i.kind       = vscode.CompletionItemKind.Snippet;
+                i.kind       = vscode.CompletionItemKind.Method;
                 i.detail     = methodClass;
                 // @ts-ignore
                 i.class      = classPrefix;
@@ -126,7 +127,7 @@ export class SpireLuaCompletions {
             // @ts-ignore
             i.insertText = new vscode.SnippetString(`function ${e.event_identifier}(e)\n\${1:${varsStr}}\nend`);
 
-            i.kind   = vscode.CompletionItemKind.Snippet;
+            i.kind   = vscode.CompletionItemKind.Text;
             // @ts-ignore
             i.detail = e.entity_type;
             // @ts-ignore

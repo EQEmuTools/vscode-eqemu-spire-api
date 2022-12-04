@@ -36,6 +36,7 @@ export class SpirePerlCompletions {
 
                 const i      = new vscode.CompletionItem(constant);
                 i.insertText = new vscode.SnippetString(constant);
+                i.kind       = vscode.CompletionItemKind.Constant;
 
                 this.constants.push(i);
             }
@@ -80,7 +81,7 @@ export class SpirePerlCompletions {
 
                 const i      = new vscode.CompletionItem(label);
                 i.insertText = new vscode.SnippetString(snippet);
-                i.kind       = vscode.CompletionItemKind.Snippet;
+                i.kind       = vscode.CompletionItemKind.Method;
                 i.detail     = methodClass;
                 // @ts-ignore
                 i.class      = classPrefix;
@@ -125,8 +126,7 @@ export class SpirePerlCompletions {
 
             // @ts-ignore
             i.insertText = new vscode.SnippetString(`sub ${e.event_name} {\n\${1:${varsStr}}\n}`);
-
-            i.kind   = vscode.CompletionItemKind.Snippet;
+            i.kind   = vscode.CompletionItemKind.Text;
             // @ts-ignore
             i.detail = e.entity_type;
             // @ts-ignore
