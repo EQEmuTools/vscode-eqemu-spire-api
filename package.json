@@ -1,11 +1,13 @@
 {
   "name": "eqemu-spire-quest-api",
-  "displayName": "eqemu-spire-quest-api",
+  "displayName": "[EQEmu] Spire Quest API Completions",
   "description": "",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "engines": {
     "vscode": "^1.73.0"
   },
+  "repository": "https://github.com/Akkadius/vscode-eqemu-spire-api",
+  "publisher": "Akkadius",
   "categories": [
     "Other",
     "Language Packs"
