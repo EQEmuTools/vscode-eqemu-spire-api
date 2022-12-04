@@ -13,7 +13,7 @@ EverQuest Emulator Server contains
 * **Lua** Full function, event, constant auto-completion Quest API support
 * **Perl** Full function, event, constant auto-completion Quest API support
 * **Automatic Updates** When EQEmulator Server source updates, Spire updates, which means this extension automatically updates the next time you start vscode.
-* **Contextual Awareness** The plugin is aware of the difference of what kind of script it is running in order to give the proper event and method exports. For example in a `player` script, `e.other` and `e.self` are different from a `npc` script in `event_say(e)`. Similarly, the completions provider knows what events are available depending on the type of script you are in `player`, `npc`, bot`, `item`, `spell` etc.
+* **Contextual Awareness** The plugin is aware of the difference of what kind of script it is running in order to give the proper event and method exports. For example in a `player` script, `e.other` and `e.self` are different from a `npc` script in `event_say(e)`. Similarly, the completions provider knows what events are available depending on the type of script you are in `player`, `npc`, `bot`, `item`, `spell` etc.
 
 ![image](https://user-images.githubusercontent.com/3319450/205477365-e2e4690e-a4f0-4270-a9b8-c9be2d63cf9a.png)
 
