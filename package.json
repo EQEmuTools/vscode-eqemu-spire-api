@@ -2,13 +2,13 @@
   "name": "eqemu-spire-quest-api",
   "displayName": "[EQEmu] Spire Quest API Completions",
   "description": "",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "icon": "img/spire.png",
   "engines": {
     "vscode": "^1.73.0"
   },
-  "repository": "https://github.com/Akkadius/vscode-eqemu-spire-api",
-  "publisher": "Akkadius",
+  "repository": "https://github.com/EQEmuTools/vscode-eqemu-spire-api",
+  "publisher": "EQEmuTools",
   "categories": [
     "Other",
     "Snippets"
