@@ -1,0 +1,60 @@
+name: Build and Release VS Code Extension
+
+on:
+  push:
+    branches: [main, master]
+    tags:
+      - "v*" # Trigger on version tags like v1.0.0
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch: # Manual trigger
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests (if they exist)
+        run: npm test --if-present
+        continue-on-error: true
+
+      - name: Compile TypeScript
+        run: npm run compile
+
+      - name: Install vsce
+        run: npm install -g @vscode/vsce
+
+      - name: Package extension
+        run: vsce package
+
+      - name: Get version from package.json
+        id: package-version
+        run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+
+      - name: Upload VSIX artifact (for non-release builds)
+        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: vscode-extension-${{ steps.package-version.outputs.version }}
+          path: "*.vsix"
+          retention-days: 90 # Max is 90 days for artifacts
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: "*.vsix"
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
