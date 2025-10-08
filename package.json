@@ -8,7 +8,7 @@
     "vscode": "^1.73.0"
   },
   "repository": "https://github.com/EQEmuTools/vscode-eqemu-spire-api",
-  "publisher": "Nazwadi",
+  "publisher": "EQEmuTools",
   "categories": [
     "Other",
     "Snippets"
