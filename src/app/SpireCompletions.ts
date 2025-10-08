@@ -20,13 +20,13 @@ export class SpireCompletions {
     console.time("completions process");
     const axios = require("axios");
     let r = await axios.get(
-      "http://spire.eqemu.dev/api/v1/quest-api/definitions"
+      "https://spire.eqemu.dev/api/v1/quest-api/definitions"
     );
     if (r.status === 200) {
       this.processDefinitions(r.data.data);
     }
     r = await axios.get(
-      "http://spire.eqemu.dev/api/v1/quest-api/vscode-snippets"
+      "https://spire.eqemu.dev/api/v1/quest-api/vscode-snippets"
     );
     if (r.status === 200) {
       this.processSnippets(r.data.data);
